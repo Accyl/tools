@@ -3,7 +3,6 @@
 
 
 import os
-import stat
 
 
 def main():
