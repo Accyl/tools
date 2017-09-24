@@ -6,13 +6,10 @@ import os
 
 
 def main():
-    path = input('要校正的路径:')
+    path = input('要校正的路径(./):')
 
-    if not path or '.' == path or '..' == path:
-        path = os.path.split(os.path.realpath(__file__))[0]
-
-        if '..' == path:
-            path = os.path.dirname(path)
+    if not path:
+        path = os.path.realpath('.')
 
     recursive = input('是否向下递归(y/N):')
     recursive = True if recursive and 'y' == recursive[0].lower() else False
@@ -73,7 +70,7 @@ def correction(path, recursive=False, file_mode=664, script_file_mode=664, corre
                 correction(DirEntity.path, recursive=recursive, file_mode=file_mode, script_file_mode=script_file_mode, correction_dir=correction_dir, dir_mode=dir_mode, ignore_hide_file_and_dir=ignore_hide_file_and_dir)
 
         if DirEntity.is_file() is True:
-            if '.sh' == DirEntity.name[-3:-1]:
+            if '.sh' == DirEntity.name[-3:]:
                 print('chmod {0} {1}'.format(script_file_mode, DirEntity.path))
                 os.system('chmod {0} "{1}"'.format(script_file_mode, DirEntity.path))
             else:
