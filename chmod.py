@@ -1,6 +1,11 @@
 #!/usr/bin/env python3
 # _._ coding:utf-8 _._
 
+"""
+该工具适用于需要大批量校正文件和文件夹权限的场景
+
+@author Accyl <email@accyl.cn>
+"""
 
 import os
 
