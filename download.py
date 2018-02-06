@@ -67,6 +67,7 @@ def remote_download_file(ssh: paramiko.SSHClient, link: str, save_name: str) -> 
     logging.info("开始下载：{0}".format(link))
     try:
         stdin, stdout, stderr = ssh.exec_command("wget -cO '/tmp/{0}' '{1}'".format(save_name, link))
+        stdout.read()
     except paramiko.SSHException as exception:
         logger.error("执行远程命令失败：{0}".format(exception))
         return False
