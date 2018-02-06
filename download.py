@@ -87,13 +87,13 @@ def download_file_to_local(ssh: paramiko.SSHClient, filename: str, target: str, 
     """
     logger.info("正在建立SFTP连接")
     try:
-        sftp = paramiko.SFTPClient.from_transport(ssh.get_transport())
+        sftp = ssh.open_sftp()
     except paramiko.SSHException as exception:
         logging.error("FTP连接失败：{0}".format(exception))
         return False
 
     file_path = os.path.join('/tmp', filename)
-    file_stat = sftp.stat(file_path)
+    file_stat = sftp.lstat(file_path)
 
     logger.info("开始回传：{0}".format(target_filename))
 
