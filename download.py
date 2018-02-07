@@ -93,8 +93,12 @@ def download_file_to_local(ssh: paramiko.SSHClient, filename: str, target: str, 
         logging.error("FTP连接失败：{0}".format(exception))
         return False
 
-    file_path = os.path.join('/tmp', filename)
-    file_stat = sftp.stat(file_path)
+    file_path = "/tmp/{0}".format(filename)
+    try:
+        file_stat = sftp.stat(file_path)
+    except FileNotFoundError:
+        logger.error("SFTP无法找到指定路径的文件：{0}".format(file_path))
+        return False
 
     logger.info("开始回传：{0}".format(target_filename))
 
@@ -123,7 +127,8 @@ def remove_remote_download_file(ssh: paramiko.SSHClient, filename: str):
     """
     logger.info("清除远程服务器的临时文件")
     try:
-        stdin, stdout, stderr = ssh.exec_command("rm -f '{0}'".format(os.path.join('/tmp', filename)))
+        stdin, stdout, stderr = ssh.exec_command("rm -f '/tmp/{0}'".format(filename))
+        stdout.read()
     except paramiko.SSHException as exception:
         logger.error("执行远程命令失败：{0}".format(exception))
         return False
