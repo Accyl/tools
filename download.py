@@ -24,13 +24,14 @@ import random
 import datetime
 import progressbar
 import sys
+from urllib import parse
 
 
 logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 logger = logging.getLogger()
 
 
-def connect_ssh(host: str, port: int=22, username: str='root', passwd: str='', use_key: bool=False, key: str=''):
+def connect_ssh(host: str, port: int = 22, username: str = 'root', passwd: str = '', use_key: bool = False, key: str = ''):
     """
     连接远程服务器.
 
@@ -78,7 +79,7 @@ def remote_download_file(ssh: paramiko.SSHClient, link: str, save_name: str) -> 
     try:
         logging.info("开始下载：{0}".format(link))
         try:
-            stdin, stdout, stderr = ssh.exec_command("wget -cO '/tmp/{0}' '{1}'".format(save_name, link))
+            stdin, stdout, stderr = ssh.exec_command("wget -c -q -t 10 -O '/tmp/{0}' '{1}'".format(save_name, link))
             stdout.read()
         except paramiko.SSHException as exception:
             logger.error("执行远程命令失败：{0}".format(exception))
@@ -203,7 +204,8 @@ if '__main__' == __name__:
 
     ssh_handle = connect_ssh(args.host, args.port, args.username, password, args.use_key, args.key)
     if ssh_handle is not False:
-        file_name = os.path.split(args.file)[-1]
+        parser_args = parse.urlparse(args.file)
+        file_name = os.path.split(parser_args.path)[-1]
         suffix = "*###*{0}{1}".format(datetime.datetime.now(), random.random())
 
         remote_download_file(ssh_handle, args.file, "{0}{1}".format(file_name, suffix))
